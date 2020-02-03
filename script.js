@@ -1,15 +1,29 @@
 const GameBoard = (() => {
-    const _boardID = [
-        ['zero','one','two'],
-        ['three','four','five'],
-        ['six','seven','eight']
-    ];
+	const _boardID = [
+		['zero', 'one', 'two'],
+		['three', 'four', 'five'],
+		['six', 'seven', 'eight']
+	];
 
-    const getBoardID = () => { return _boardID; };
+	const _boardSet = {
+		zero: 2,
+		one: 2,
+		two: 2,
+		three: 2,
+		four: 2,
+		five: 2,
+		six: 2,
+		seven: 2,
+		eight: 2
+	};
 
-    const renderBoard = () => {
-        const divBoard = document.querySelector('#board');
-        const boardTemplate = `
+	const getBoardID = () => {
+		return _boardID;
+	};
+
+	const renderBoard = () => {
+		const divBoard = document.querySelector('#board');
+		const boardTemplate = `
         <div id=row-1 class="row">
             <div id="zero" class="square"></div>
             <div id="one" class="square"></div>
@@ -26,39 +40,33 @@ const GameBoard = (() => {
             <div id="eight" class="square"></div>
         </div>
         `;
-        divBoard.innerHTML = boardTemplate;
-    };
+		divBoard.innerHTML = boardTemplate;
+	};
 
-    const markBoard = (id, className) => {
-        const square = document.querySelector(`#${id}`);
-        if (className == 'square') {
-            for (let i = 0; i < _boardID.length; i++) {
-                for (let j = 0; j < _boardID[i].length; j++) {
-                    if (id == _boardID[i][j] && square.innerText == '') {
-                        // if x turn
-                        square.innerText = 'x';
-                        // if o turn
-                        console.log('marked');
-                        break;
-                    }
-                }
-            }
-        }
-    };
+	const markBoard = id => {
+		const squareID = document.querySelector(`#${id}`);
+		if (_boardSet[id] && _boardSet[id] != 1) {
+			squareID.innerText = 'x';
+			_boardSet[id]--;
+			console.log(_boardSet);
+		} else {
+			console.log('false');
+		}
+	};
 
-    return { 
-        getBoardID, 
-        renderBoard,
-        markBoard
-    };
+	return {
+		getBoardID,
+		renderBoard,
+		markBoard
+	};
 })();
 
 GameBoard.renderBoard();
 
 document.addEventListener('click', e => {
-    if (e.target.className == 'square') {
-        GameBoard.markBoard(e.target.id, e.target.className);
-    }
+	if (e.target.className == 'square') {
+		GameBoard.markBoard(e.target.id);
+	}
 });
 
 // check for win condition on the 5th turn
