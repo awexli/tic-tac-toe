@@ -24,3 +24,7 @@ html {
     border: solid 1px red;
     text-align: center;
 }
+
+#modal-button {
+    display: none;
+}

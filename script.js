@@ -87,24 +87,45 @@ const GameBoard = (() => {
         }
 
         if (xCount === 3) {
-          return console.log("x-victory!");
+          return 1;
         }
 
         if (oCount === 3) {
-          return console.log("o-victory!");
+          return 2;
         }
       }
     }
+  };
+
+  const resetGame = () => {
+    for (const key in _boardSet) {
+      if (_boardSet[key] === 1) {
+        _boardSet[key]++;
+      }
+    }
+    _isXturn = true;
+    renderBoard();
   };
 
   return {
     getTurnNumber,
     renderBoard,
     markBoard,
-    checkWinCondition
+    checkWinCondition,
+    resetGame
   };
 })();
 
+const displayVictor = (player) => {
+  const modalButton = document.getElementById("modal-button");
+  const modalTitle = document.getElementById("v-modal-label");
+
+  modalButton.disabled = false;
+  modalButton.click();
+  modalButton.disabled = true;
+
+  modalTitle.innerText = `${player} wins`;
+};
 
 GameBoard.renderBoard();
 
@@ -112,9 +133,18 @@ document.addEventListener("click", e => {
   if (e.target.className == "square") {
     GameBoard.markBoard(e.target.id);
     if (GameBoard.getTurnNumber() >= 5) {
-      GameBoard.checkWinCondition();
+      const victor = GameBoard.checkWinCondition();
+      if (victor === 1) {
+        displayVictor("x");
+      }
+
+      if (victor === 2) {
+        displayVictor("o");
+      }
     }
   }
-});
 
-// check for win condition on the 5th turn
+  if (e.target.id == "reset-game") {
+    GameBoard.resetGame();
+  }
+});
