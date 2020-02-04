@@ -1,10 +1,6 @@
 const GameBoard = (() => {
-  const _boardID = [
-    ["zero", "one", "two"],
-    ["three", "four", "five"],
-    ["six", "seven", "eight"]
-  ];
-
+  let _isXturn = true;
+  let _turnNumber = 0;
   const _boardSet = {
     zero: 2,
     one: 2,
@@ -17,8 +13,8 @@ const GameBoard = (() => {
     eight: 2
   };
 
-  const getBoardID = () => {
-    return _boardID;
+  const getTurnNumber = () => {
+    return _turnNumber;
   };
 
   const renderBoard = () => {
@@ -43,32 +39,81 @@ const GameBoard = (() => {
     divBoard.innerHTML = boardTemplate;
   };
 
+  const playerTurns = () => {
+    if (_isXturn) {
+      _isXturn = false;
+      return "x";
+    } 
+
+    _isXturn = true;
+    return "o";
+  };
+
   const markBoard = id => {
     const squareID = document.querySelector(`#${id}`);
     if (_boardSet[id] && _boardSet[id] != 1) {
-      // if player x turn
-      squareID.innerText = "x";
-      // if player o turn
-
+      squareID.innerText = playerTurns();
       _boardSet[id]--;
-      console.log(_boardSet);
+      _turnNumber++;
     } else {
       console.log("false");
     }
   };
 
+  const _winConditions = [
+    ["zero", "one", "two"],
+    ["three", "four", "five"],
+    ["six", "seven", "eight"],
+    ["zero", "three", "six"],
+    ["one", "four", "seven"],
+    ["two", "five", "eight"],
+    ["zero", "four", "eight"],
+    ["two", "four", "six"],
+  ];
+
+  const checkWinCondition = () => {
+    let xCount, oCount;
+    for (let i = 0; i < _winConditions.length; i++) {
+      xCount = 0;
+      oCount = 0;
+      for (let j = 0; j < _winConditions[i].length; j++) {
+        const squareID = document.getElementById(`${_winConditions[i][j]}`);
+        if (squareID.innerText == "x") {
+          xCount++;
+        }
+
+        if (squareID.innerText == "o") {
+          oCount++;
+        }
+
+        if (xCount === 3) {
+          return console.log("x-victory!");
+        }
+
+        if (oCount === 3) {
+          return console.log("o-victory!");
+        }
+      }
+    }
+  };
+
   return {
-    getBoardID,
+    getTurnNumber,
     renderBoard,
-    markBoard
+    markBoard,
+    checkWinCondition
   };
 })();
+
 
 GameBoard.renderBoard();
 
 document.addEventListener("click", e => {
   if (e.target.className == "square") {
     GameBoard.markBoard(e.target.id);
+    if (GameBoard.getTurnNumber() >= 5) {
+      GameBoard.checkWinCondition();
+    }
   }
 });
 

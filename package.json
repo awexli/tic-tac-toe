@@ -25,6 +25,6 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
-  }
+  },
   "homepage": "https://github.com/awexli/tic-tac-toe#readme"
 }
