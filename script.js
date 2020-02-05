@@ -1,6 +1,8 @@
-const GameBoard = (() => {
+const Game = (() => {
+  // variables that must be reset
   let _isXturn = true;
   let _turnNumber = 0;
+  let _hasWinner = false;
   const _boardSet = {
     zero: 2,
     one: 2,
@@ -11,6 +13,11 @@ const GameBoard = (() => {
     six: 2,
     seven: 2,
     eight: 2
+  };
+  //===========================//
+
+  const getHasWinner = () => {
+    return _hasWinner;
   };
 
   const getTurnNumber = () => {
@@ -51,10 +58,12 @@ const GameBoard = (() => {
 
   const markBoard = id => {
     const squareID = document.querySelector(`#${id}`);
-    if (_boardSet[id] && _boardSet[id] != 1) {
-      squareID.innerText = playerTurns();
+    if (_boardSet[id]) {
+      if (_boardSet[id] != 1) {
+        squareID.innerText = playerTurns();
       _boardSet[id]--;
       _turnNumber++;
+      }
     } else {
       console.log("false");
     }
@@ -71,6 +80,10 @@ const GameBoard = (() => {
     ["two", "four", "six"],
   ];
 
+  // could prob use a switch statement
+  // in conjunction with _boardSet
+  // plus 1 for x
+  // minus 1 for o
   const checkWinCondition = () => {
     let xCount, oCount;
     for (let i = 0; i < _winConditions.length; i++) {
@@ -87,10 +100,12 @@ const GameBoard = (() => {
         }
 
         if (xCount === 3) {
+          _hasWinner = true;
           return 1;
         }
 
         if (oCount === 3) {
+          _hasWinner = true;
           return 2;
         }
       }
@@ -103,12 +118,15 @@ const GameBoard = (() => {
         _boardSet[key]++;
       }
     }
+    _hasWinner = false;
     _isXturn = true;
+    _turnNumber = 0;
     renderBoard();
   };
 
   return {
     getTurnNumber,
+    getHasWinner,
     renderBoard,
     markBoard,
     checkWinCondition,
@@ -116,35 +134,60 @@ const GameBoard = (() => {
   };
 })();
 
-const displayVictor = (player) => {
+const displayModal = (() => {
   const modalButton = document.getElementById("modal-button");
   const modalTitle = document.getElementById("v-modal-label");
 
-  modalButton.disabled = false;
-  modalButton.click();
-  modalButton.disabled = true;
+  const open = () => {
+    modalButton.disabled = false;
+    modalButton.click();
+    modalButton.disabled = true;
+  };
 
-  modalTitle.innerText = `${player} wins`;
-};
+  const winner = (player) => {
+    open();
+    modalTitle.innerText = `${player} wins`;
+  };
+  
+  const tie = () => {
+    open();
+    modalTitle.innerText = "It's a tie!";
+  };
 
-GameBoard.renderBoard();
+  return {winner, tie};
+})();
 
 document.addEventListener("click", e => {
   if (e.target.className == "square") {
-    GameBoard.markBoard(e.target.id);
-    if (GameBoard.getTurnNumber() >= 5) {
-      const victor = GameBoard.checkWinCondition();
+    Game.markBoard(e.target.id);
+    const turnNum = Game.getTurnNumber();
+    if (turnNum >= 5) {
+      const victor = Game.checkWinCondition();
+      const hasWinner = Game.getHasWinner();
+
       if (victor === 1) {
-        displayVictor("x");
+        displayModal.winner("x");
       }
 
       if (victor === 2) {
-        displayVictor("o");
+        displayModal.winner("o");
+      }
+
+      if (turnNum === 9 && hasWinner == false) {
+        displayModal.tie();
       }
     }
   }
 
   if (e.target.id == "reset-game") {
-    GameBoard.resetGame();
+    Game.resetGame();
   }
 });
+
+Game.renderBoard();
+
+/**
+ * maybe make module that executes 
+ * all necessary dom elements 
+ * (ones being called a lot) 
+ */
