@@ -62,25 +62,25 @@ const Game = (() => {
     _gameStart = true;
   };
 
-  const playerTurns = () => {
-    if (_isXturn) {
-      _isXturn = false;
-      return "x";
-    } 
-
-    _isXturn = true;
-    return "o";
-  };
-
   const markBoard = id => {
     const squareID = document.getElementById(`${id}`);
     id = parseInt(id);
-    if (_board[id] < 3 && _board[id] > 1) {
+    const playerTurns = () => {
+      if (_isXturn) {
+        _isXturn = false;
+        return "x";
+      } 
+  
+      _isXturn = true;
+      return "o";
+    };
+
+    if (_board[id] === 2) {
       if (playerTurns() == "x") {
-        squareID.innerText = "x";
+        squareID.innerText = "X";
         _board[id]++;
       } else {
-        squareID.innerText = "o";
+        squareID.innerText = "O";
         _board[id]--;
       }
       _turns++;
@@ -89,59 +89,42 @@ const Game = (() => {
     }
   };
 
-  const checkCondition = (pCount) => {
-    if (pCount != 1 && pCount != 3) {
+  const checkCondition = (playerVal) => {
+    if (playerVal != 1 && playerVal != 3) {
       return console.error("Incorrect args for checkCondition()");
     }
 
-    if (_board[0] === pCount &&
-        _board[1] === pCount &&
-        _board[2] === pCount
-      ) {
+    const findWin = (val, s1, s2, s3) => {
+      if (_board[s1] === val && _board[s2] === val && _board[s3] === val) {
+        _hasWinner = true;
         return true;
       }
-    if (_board[3] === pCount &&
-        _board[4] === pCount &&
-        _board[5] === pCount
-      ) {
-        return true;
-      }
-    if (_board[6] === pCount &&
-        _board[7] === pCount &&
-        _board[8] === pCount
-      ) {
-        return true;
-      }
-    if (_board[0] === pCount &&
-        _board[3] === pCount &&
-        _board[6] === pCount
-      ) {
-        return true;
-      }
-    if (_board[1] === pCount &&
-        _board[4] === pCount &&
-        _board[7] === pCount
-      ) {
-        return true;
-      }
-    if (_board[2] === pCount &&
-        _board[5] === pCount &&
-        _board[8] === pCount
-      ) {
-        return true;
-      }
-    if (_board[0] === pCount &&
-        _board[4] === pCount &&
-        _board[8] === pCount
-      ) {
-        return true;
-      }
-    if (_board[2] === pCount &&
-        _board[4] === pCount &&
-        _board[6] === pCount
-      ) {
-        return true;
-      }
+      return false;
+    };
+
+    const combos = [
+      0,1,2,
+      3,4,5,
+      6,7,8,
+      0,3,6,
+      1,4,7,
+      2,5,8,
+      0,4,8,
+      2,4,6
+    ];
+    let foundWin = false;
+    let s1 = 0,
+        s2 = 1,
+        s3 = 2;
+
+    for (let i = 0; i < 9; i++) {
+      foundWin = findWin(playerVal, combos[s1], combos[s2], combos[s3]);
+      if (foundWin) { return true; }
+      s1 += 3;
+      s2 += 3;
+      s3 += 3;
+    }
+
     return false;
   };
 
