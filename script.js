@@ -4,19 +4,18 @@ const Game = (() => {
   let _turns = 0;
   let _hasWinner = false;
   let _gameStart = false;
-  const _boardSet = {
-    zero: 2,
-    one: 2,
-    two: 2,
-    three: 2,
-    four: 2,
-    five: 2,
-    six: 2,
-    seven: 2,
-    eight: 2
+  const _boardSet2 = {
+    0: 2,
+    1: 2,
+    2: 2,
+    3: 2,
+    4: 2,
+    5: 2,
+    6: 2,
+    7: 2,
+    8: 2
   };
-  //===========================//
-  
+
   const startBoard = () => {
     const divBoard = document.querySelector("#board");
     const boardTemplate = `
@@ -43,19 +42,19 @@ const Game = (() => {
     const divBoard = document.querySelector("#board");
     const boardTemplate = `
         <div id=row-1 class="row">
-            <div id="zero" class="square"></div>
-            <div id="one" class="square"></div>
-            <div id="two" class="square"></div>
+            <div id="0" class="square"></div>
+            <div id="1" class="square"></div>
+            <div id="2" class="square"></div>
         </div>
         <div id=row-2 class="row">
-            <div id="three" class="square"></div>
-            <div id="four" class="square"></div>
-            <div id="five" class="square"></div>
+            <div id="3" class="square"></div>
+            <div id="4" class="square"></div>
+            <div id="5" class="square"></div>
         </div>
         <div id=row-3 class="row">
-            <div id="six" class="square"></div>
-            <div id="seven" class="square"></div>
-            <div id="eight" class="square"></div>
+            <div id="6" class="square"></div>
+            <div id="7" class="square"></div>
+            <div id="8" class="square"></div>
         </div>
         `;
     divBoard.innerHTML = boardTemplate;
@@ -73,66 +72,81 @@ const Game = (() => {
   };
 
   const markBoard = id => {
-    const squareID = document.querySelector(`#${id}`);
-    if (_boardSet[id]) {
-      if (_boardSet[id] != 1) {
-        squareID.innerText = playerTurns();
-      _boardSet[id]--;
-      _turns++;
+    const squareID = document.getElementById(`${id}`);
+    id = parseInt(id);
+    if (_boardSet2[id] < 3 && _boardSet2[id] > 1) {
+      if (playerTurns() == "x") {
+        squareID.innerText = "x";
+        _boardSet2[id]++;
+      } else {
+        squareID.innerText = "o";
+        _boardSet2[id]--;
       }
+      _turns++;
     } else {
-      console.log("false");
+      console.log("Game hasn't started");
     }
   };
 
-  const _winConditions = [
-    ["zero", "one", "two"],
-    ["three", "four", "five"],
-    ["six", "seven", "eight"],
-    ["zero", "three", "six"],
-    ["one", "four", "seven"],
-    ["two", "five", "eight"],
-    ["zero", "four", "eight"],
-    ["two", "four", "six"],
-  ];
-
-  // could prob use a switch statement
-  // in conjunction with _boardSet
-  // plus 1 for x
-  // minus 1 for o
-  const checkWinCondition = () => {
-    let xCount, oCount;
-    for (let i = 0; i < _winConditions.length; i++) {
-      xCount = 0;
-      oCount = 0;
-      for (let j = 0; j < _winConditions[i].length; j++) {
-        const squareID = document.getElementById(`${_winConditions[i][j]}`);
-        if (squareID.innerText == "x") {
-          xCount++;
-        }
-
-        if (squareID.innerText == "o") {
-          oCount++;
-        }
-
-        if (xCount === 3) {
-          _hasWinner = true;
-          return 1;
-        }
-
-        if (oCount === 3) {
-          _hasWinner = true;
-          return 2;
-        }
-      }
+  const checkCondition = (pCount) => {
+    if (pCount != 1 && pCount != 3) {
+      return console.error("Incorrect args for checkCondition()");
     }
+
+    if (_boardSet2[0] === pCount &&
+        _boardSet2[1] === pCount &&
+        _boardSet2[2] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[3] === pCount &&
+        _boardSet2[4] === pCount &&
+        _boardSet2[5] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[6] === pCount &&
+        _boardSet2[7] === pCount &&
+        _boardSet2[8] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[0] === pCount &&
+        _boardSet2[3] === pCount &&
+        _boardSet2[6] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[1] === pCount &&
+        _boardSet2[4] === pCount &&
+        _boardSet2[7] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[2] === pCount &&
+        _boardSet2[5] === pCount &&
+        _boardSet2[8] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[0] === pCount &&
+        _boardSet2[4] === pCount &&
+        _boardSet2[8] === pCount
+      ) {
+        return true;
+      }
+    if (_boardSet2[2] === pCount &&
+        _boardSet2[4] === pCount &&
+        _boardSet2[6] === pCount
+      ) {
+        return true;
+      }
+    return false;
   };
 
   const reset = () => {
-    for (const key in _boardSet) {
-      if (_boardSet[key] === 1) {
-        _boardSet[key]++;
-      }
+    for (const key in _boardSet2) {
+      _boardSet2[key] = 2;
     }
     _hasWinner = false;
     _isXturn = true;
@@ -153,14 +167,14 @@ const Game = (() => {
   };
 
   return {
-    turnNumber,
-    hasWinner,
-    started,
     startBoard,
     renderBoard,
     markBoard,
-    checkWinCondition,
-    reset
+    checkCondition,
+    reset,
+    started,
+    hasWinner,
+    turnNumber
   };
 })();
 
@@ -188,25 +202,24 @@ const displayModal = (() => {
 })();
 
 document.addEventListener("click", e => {
-  if (Game.started()) {
-    if (e.target.className == "square") {
-      Game.markBoard(e.target.id);
-      const turnNum = Game.turnNumber();
-      if (turnNum >= 5) {
-        const winner = Game.checkWinCondition();
-        const hasWinner = Game.hasWinner();
-  
-        if (winner === 1) {
-          displayModal.winner("x");
-        }
-  
-        if (winner === 2) {
-          displayModal.winner("o");
-        }
-  
-        if (turnNum > 8 && !hasWinner) {
-          displayModal.tie();
-        }
+  if (e.target.className == "square") {
+    Game.markBoard(e.target.id);
+    const turnNum = Game.turnNumber();
+    if (turnNum >= 5) {
+      const xWinner = Game.checkCondition(3);
+      const oWinner = Game.checkCondition(1);
+      const hasWinner = Game.hasWinner();
+
+      if (xWinner) {
+        displayModal.winner("x");
+      }
+
+      if (oWinner) {
+        displayModal.winner("o");
+      }
+
+      if (turnNum > 8 && !hasWinner) {
+        displayModal.tie();
       }
     }
   }
