@@ -1,7 +1,7 @@
 const Game = (() => {
   // variables that must be reset
   let _isXturn = true;
-  let _turnNumber = 0;
+  let _turns = 0;
   let _hasWinner = false;
   let _gameStart = false;
   const _boardSet = {
@@ -16,21 +16,9 @@ const Game = (() => {
     eight: 2
   };
   //===========================//
-  const divBoard = document.querySelector("#board");
-
-  const started = () => {
-    return _gameStart;
-  };
-
-  const getHasWinner = () => {
-    return _hasWinner;
-  };
-
-  const getTurnNumber = () => {
-    return _turnNumber;
-  };
-
+  
   const startBoard = () => {
+    const divBoard = document.querySelector("#board");
     const boardTemplate = `
         <div id=row-1 class="row">
             <div id="zero" class="square">T</div>
@@ -52,6 +40,7 @@ const Game = (() => {
   };
 
   const renderBoard = () => {
+    const divBoard = document.querySelector("#board");
     const boardTemplate = `
         <div id=row-1 class="row">
             <div id="zero" class="square"></div>
@@ -89,7 +78,7 @@ const Game = (() => {
       if (_boardSet[id] != 1) {
         squareID.innerText = playerTurns();
       _boardSet[id]--;
-      _turnNumber++;
+      _turns++;
       }
     } else {
       console.log("false");
@@ -139,7 +128,7 @@ const Game = (() => {
     }
   };
 
-  const resetGame = () => {
+  const reset = () => {
     for (const key in _boardSet) {
       if (_boardSet[key] === 1) {
         _boardSet[key]++;
@@ -147,19 +136,31 @@ const Game = (() => {
     }
     _hasWinner = false;
     _isXturn = true;
-    _turnNumber = 0;
+    _turns = 0;
     renderBoard();
   };
 
+  const started = () => {
+    return _gameStart;
+  };
+
+  const hasWinner = () => {
+    return _hasWinner;
+  };
+
+  const turnNumber = () => {
+    return _turns;
+  };
+
   return {
-    getTurnNumber,
-    getHasWinner,
+    turnNumber,
+    hasWinner,
     started,
     startBoard,
     renderBoard,
     markBoard,
     checkWinCondition,
-    resetGame
+    reset
   };
 })();
 
@@ -167,19 +168,19 @@ const displayModal = (() => {
   const modalButton = document.getElementById("modal-button");
   const modalTitle = document.getElementById("v-modal-label");
 
-  const open = () => {
+  const openModal = () => {
     modalButton.disabled = false;
     modalButton.click();
     modalButton.disabled = true;
   };
 
   const winner = (player) => {
-    open();
+    openModal();
     modalTitle.innerText = `${player} wins`;
   };
   
   const tie = () => {
-    open();
+    openModal();
     modalTitle.innerText = "It's a tie!";
   };
 
@@ -190,20 +191,20 @@ document.addEventListener("click", e => {
   if (Game.started()) {
     if (e.target.className == "square") {
       Game.markBoard(e.target.id);
-      const turnNum = Game.getTurnNumber();
+      const turnNum = Game.turnNumber();
       if (turnNum >= 5) {
-        const victor = Game.checkWinCondition();
-        const hasWinner = Game.getHasWinner();
+        const winner = Game.checkWinCondition();
+        const hasWinner = Game.hasWinner();
   
-        if (victor === 1) {
+        if (winner === 1) {
           displayModal.winner("x");
         }
   
-        if (victor === 2) {
+        if (winner === 2) {
           displayModal.winner("o");
         }
   
-        if (turnNum === 9 && hasWinner == false) {
+        if (turnNum > 8 && !hasWinner) {
           displayModal.tie();
         }
       }
@@ -216,7 +217,7 @@ document.addEventListener("click", e => {
   }
 
   if (e.target.id == "reset-game") {
-    Game.resetGame();
+    Game.reset();
   }
 });
 
