@@ -4,27 +4,33 @@ html {
 *, *:before, *:after {
     box-sizing: inherit;
 }
-
-#board, #board2 {
-    margin: 15% 0 15% 0;
-    border: 0px solid blue;
+body {
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
+    margin: 5% auto;
 }
-
-.row {
+#board {
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-
 .square {
     width: 6rem;
     height: 6rem;
-    border: solid 1px red;
+    border-bottom: solid 1px rgb(190, 182, 182);
+    border-right: solid 1px rgb(190, 182, 182);
     text-align: center;
+    vertical-align: middle;
+    line-height: 4.5rem;  
+    cursor: pointer;
+    font-size: 5rem;
 }
-
 #modal-button {
     display: none;
+}
+.card{
+    border: 5px solid rgb(190, 182, 182);
 }

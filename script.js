@@ -1,10 +1,6 @@
 const Game = (() => {
   // variables that must be reset
-  let _isXturn = true;
-  let _turns = 0;
-  let _hasWinner = false;
-  let _gameStart = false;
-  const _boardSet2 = {
+  const _board = {
     0: 2,
     1: 2,
     2: 2,
@@ -15,6 +11,11 @@ const Game = (() => {
     7: 2,
     8: 2
   };
+  let _isXturn = true;
+  let _turns = 0;
+  let _hasWinner = false;
+  // ========================= //
+  let _gameStart = false;
 
   const startBoard = () => {
     const divBoard = document.querySelector("#board");
@@ -74,17 +75,17 @@ const Game = (() => {
   const markBoard = id => {
     const squareID = document.getElementById(`${id}`);
     id = parseInt(id);
-    if (_boardSet2[id] < 3 && _boardSet2[id] > 1) {
+    if (_board[id] < 3 && _board[id] > 1) {
       if (playerTurns() == "x") {
         squareID.innerText = "x";
-        _boardSet2[id]++;
+        _board[id]++;
       } else {
         squareID.innerText = "o";
-        _boardSet2[id]--;
+        _board[id]--;
       }
       _turns++;
     } else {
-      console.log("Game hasn't started");
+      console.log("Already Marked");
     }
   };
 
@@ -93,51 +94,51 @@ const Game = (() => {
       return console.error("Incorrect args for checkCondition()");
     }
 
-    if (_boardSet2[0] === pCount &&
-        _boardSet2[1] === pCount &&
-        _boardSet2[2] === pCount
+    if (_board[0] === pCount &&
+        _board[1] === pCount &&
+        _board[2] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[3] === pCount &&
-        _boardSet2[4] === pCount &&
-        _boardSet2[5] === pCount
+    if (_board[3] === pCount &&
+        _board[4] === pCount &&
+        _board[5] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[6] === pCount &&
-        _boardSet2[7] === pCount &&
-        _boardSet2[8] === pCount
+    if (_board[6] === pCount &&
+        _board[7] === pCount &&
+        _board[8] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[0] === pCount &&
-        _boardSet2[3] === pCount &&
-        _boardSet2[6] === pCount
+    if (_board[0] === pCount &&
+        _board[3] === pCount &&
+        _board[6] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[1] === pCount &&
-        _boardSet2[4] === pCount &&
-        _boardSet2[7] === pCount
+    if (_board[1] === pCount &&
+        _board[4] === pCount &&
+        _board[7] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[2] === pCount &&
-        _boardSet2[5] === pCount &&
-        _boardSet2[8] === pCount
+    if (_board[2] === pCount &&
+        _board[5] === pCount &&
+        _board[8] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[0] === pCount &&
-        _boardSet2[4] === pCount &&
-        _boardSet2[8] === pCount
+    if (_board[0] === pCount &&
+        _board[4] === pCount &&
+        _board[8] === pCount
       ) {
         return true;
       }
-    if (_boardSet2[2] === pCount &&
-        _boardSet2[4] === pCount &&
-        _boardSet2[6] === pCount
+    if (_board[2] === pCount &&
+        _board[4] === pCount &&
+        _board[6] === pCount
       ) {
         return true;
       }
@@ -145,8 +146,8 @@ const Game = (() => {
   };
 
   const reset = () => {
-    for (const key in _boardSet2) {
-      _boardSet2[key] = 2;
+    for (const key in _board) {
+      _board[key] = 2;
     }
     _hasWinner = false;
     _isXturn = true;
@@ -190,7 +191,7 @@ const displayModal = (() => {
 
   const winner = (player) => {
     openModal();
-    modalTitle.innerText = `${player} wins`;
+    modalTitle.innerText = `${player} Wins!`;
   };
   
   const tie = () => {
@@ -211,11 +212,11 @@ document.addEventListener("click", e => {
       const hasWinner = Game.hasWinner();
 
       if (xWinner) {
-        displayModal.winner("x");
+        displayModal.winner("X");
       }
 
       if (oWinner) {
-        displayModal.winner("o");
+        displayModal.winner("O");
       }
 
       if (turnNum > 8 && !hasWinner) {
