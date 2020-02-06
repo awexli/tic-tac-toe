@@ -3,6 +3,7 @@ const Game = (() => {
   let _isXturn = true;
   let _turnNumber = 0;
   let _hasWinner = false;
+  let _gameStart = false;
   const _boardSet = {
     zero: 2,
     one: 2,
@@ -15,6 +16,11 @@ const Game = (() => {
     eight: 2
   };
   //===========================//
+  const divBoard = document.querySelector("#board");
+
+  const started = () => {
+    return _gameStart;
+  };
 
   const getHasWinner = () => {
     return _hasWinner;
@@ -24,8 +30,28 @@ const Game = (() => {
     return _turnNumber;
   };
 
+  const startBoard = () => {
+    const boardTemplate = `
+        <div id=row-1 class="row">
+            <div id="zero" class="square">T</div>
+            <div id="one" class="square">I</div>
+            <div id="two" class="square">C</div>
+        </div>
+        <div id=row-2 class="row">
+            <div id="three" class="square">T</div>
+            <div id="four" class="square">A</div>
+            <div id="five" class="square">C</div>
+        </div>
+        <div id=row-3 class="row">
+            <div id="six" class="square">T</div>
+            <div id="seven" class="square">O</div>
+            <div id="eight" class="square">E</div>
+        </div>
+        `;
+    divBoard.innerHTML = boardTemplate;
+  };
+
   const renderBoard = () => {
-    const divBoard = document.querySelector("#board");
     const boardTemplate = `
         <div id=row-1 class="row">
             <div id="zero" class="square"></div>
@@ -44,6 +70,7 @@ const Game = (() => {
         </div>
         `;
     divBoard.innerHTML = boardTemplate;
+    _gameStart = true;
   };
 
   const playerTurns = () => {
@@ -127,6 +154,8 @@ const Game = (() => {
   return {
     getTurnNumber,
     getHasWinner,
+    started,
+    startBoard,
     renderBoard,
     markBoard,
     checkWinCondition,
@@ -158,25 +187,32 @@ const displayModal = (() => {
 })();
 
 document.addEventListener("click", e => {
-  if (e.target.className == "square") {
-    Game.markBoard(e.target.id);
-    const turnNum = Game.getTurnNumber();
-    if (turnNum >= 5) {
-      const victor = Game.checkWinCondition();
-      const hasWinner = Game.getHasWinner();
-
-      if (victor === 1) {
-        displayModal.winner("x");
-      }
-
-      if (victor === 2) {
-        displayModal.winner("o");
-      }
-
-      if (turnNum === 9 && hasWinner == false) {
-        displayModal.tie();
+  if (Game.started()) {
+    if (e.target.className == "square") {
+      Game.markBoard(e.target.id);
+      const turnNum = Game.getTurnNumber();
+      if (turnNum >= 5) {
+        const victor = Game.checkWinCondition();
+        const hasWinner = Game.getHasWinner();
+  
+        if (victor === 1) {
+          displayModal.winner("x");
+        }
+  
+        if (victor === 2) {
+          displayModal.winner("o");
+        }
+  
+        if (turnNum === 9 && hasWinner == false) {
+          displayModal.tie();
+        }
       }
     }
+  }
+
+  if (e.target.id == "start-game") {
+    Game.renderBoard();
+    e.target.disabled = true;
   }
 
   if (e.target.id == "reset-game") {
@@ -184,7 +220,7 @@ document.addEventListener("click", e => {
   }
 });
 
-Game.renderBoard();
+Game.startBoard();
 
 /**
  * maybe make module that executes 
