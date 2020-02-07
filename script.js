@@ -194,44 +194,54 @@ const displayModal = (() => {
   return {winner, tie};
 })();
 
-const handleClick = (e) => {
-  const square = e.target.id;
-  const turnNum = Game.turnNumber();
+const handleClick = (() => {
+  const cells = e => {
+    const square = e.target.id;
+    const turnNum = Game.turnNumber();
 
-  Game.markBoard(square);
+    Game.markBoard(square);
 
-  if (turnNum >= 4) {
-    const xWinner = Game.checkBoard(3);
-    const oWinner = Game.checkBoard(1);
-    const hasWinner = Game.hasWinner();
+    if (turnNum >= 4) {
+      const xWinner = Game.checkBoard(3);
+      const oWinner = Game.checkBoard(1);
+      const hasWinner = Game.hasWinner();
 
-    if (xWinner) { displayModal.winner("X"); }
+      if (xWinner) { displayModal.winner("X"); }
 
-    if (oWinner) { displayModal.winner("O"); }
+      if (oWinner) { displayModal.winner("O"); }
+
+      if (turnNum >= 8 && !hasWinner) { displayModal.tie(); }
+    }
+  };
+
+  const buttons = e => {
+    if (e.target.id == "start-game") {
+      Game.renderBoard();
+      e.target.disabled = true;
+    }
   
-    if (turnNum >= 8 && !hasWinner) { displayModal.tie(); }
-  }
-};
+    if (e.target.id == "rematch") {
+      const isRematch = true;
+      Game.reRender(isRematch);
+    }
+  
+    if (e.target.matches(".reset")) {
+      const isRematch = false;
+      Game.reRender(isRematch);
+    }
+  };
+  
+  return {cells, buttons};
+})();
 
 
 document.addEventListener("click", e => {
   if (e.target.matches(".square")) {
-    handleClick(e);
+    handleClick.cells(e);
   }
 
-  if (e.target.id == "start-game") {
-    Game.renderBoard();
-    e.target.disabled = true;
-  }
-
-  if (e.target.id == "rematch") {
-    const isRematch = true;
-    Game.reRender(isRematch);
-  }
-
-  if (e.target.matches(".reset")) {
-    const isRematch = false;
-    Game.reRender(isRematch);
+  if (e.target.matches(".btn")) {
+    handleClick.buttons(e);
   }
 }, false);
 
