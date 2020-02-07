@@ -67,6 +67,7 @@ const Game = (() => {
   const markBoard = id => {
     const squareID = document.getElementById(`${id}`);
     id = parseInt(id);
+
     const playerTurns = () => {
       if (_isXturn) {
         _isXturn = false;
@@ -94,17 +95,6 @@ const Game = (() => {
       return console.error("Incorrect args for checkBoard()");
     }
 
-    const findWin = (val, s1, s2, s3) => {
-      const sqOneMarked = _board[s1] === val;
-      const sqTwoMarked = _board[s2] === val;
-      const sqThreeMarked = _board[s3] === val;
-      if (sqOneMarked && sqTwoMarked && sqThreeMarked) {
-        _hasWinner = true;
-        return true;
-      }
-      return false;
-    };
-
     const combos = [
       0,1,2,
       3,4,5,
@@ -116,16 +106,33 @@ const Game = (() => {
       2,4,6
     ];
     let foundWin = false;
-    let s1 = 0,
-        s2 = 1,
-        s3 = 2;
+    let sq1 = 0, sq2 = 1, sq3 = 2;
+
+    const findWin = (val, sq1, sq2, sq3) => {
+      const sqOneMarked = _board[sq1] === val;
+      const sqTwoMarked = _board[sq2] === val;
+      const sqThreeMarked = _board[sq3] === val;
+      if (sqOneMarked && sqTwoMarked && sqThreeMarked) {
+        _hasWinner = true;
+        return true;
+      }
+      return false;
+    };
+
+    const nextCombo = () => {
+      sq1 += 3;
+      sq2 += 3;
+      sq3 += 3;
+    };
 
     for (let i = 0; i < 9; i++) {
-      foundWin = findWin(playerVal, combos[s1], combos[s2], combos[s3]);
-      if (foundWin) { return true; }
-      s1 += 3;
-      s2 += 3;
-      s3 += 3;
+      foundWin = findWin(playerVal, combos[sq1], combos[sq2], combos[sq3]);
+
+      if (foundWin) { 
+        return true; 
+      }
+      
+      nextCombo();
     }
 
     return false;
@@ -147,6 +154,7 @@ const Game = (() => {
     }
   };
 
+  // might need this later
   const started = () => {
     return _gameStart;
   };
