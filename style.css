@@ -10,38 +10,40 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 5% auto;
+    background-color: #243447;
 }
 #board {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.square {
+.square, .cell {
     width: 6rem;
     height: 6rem;
     line-height: 6rem;
     cursor: pointer;
     font-size: 5rem;
+    transition: font-size 0.12s;
+}
+.cell:hover {
+    font-size: 5.5rem;
 }
 #modal-button {
     display: none;
 }
 .card{
     border: 4px solid rgb(131, 131, 131);
-}
-#row-1 {
-    background-color: rgb(172, 172, 172);
-}
-#row-2 {
-    background-color: rgb(180, 180, 180);
-}
-#row-3 {
-    background-color: rgb(190, 190, 190);
+    background-color: #243447;
+    color: ivory;
 }
 .row {
     border-bottom: solid 1px rgb(131, 131, 131);
 }
 [id="1"], [id="4"], [id="7"] {
+    border-right: solid 1px rgb(131, 131, 131);
+    border-left: solid 1px rgb(131, 131, 131);
+}
+#one, #four, #seven {
     border-right: solid 1px rgb(131, 131, 131);
     border-left: solid 1px rgb(131, 131, 131);
 }

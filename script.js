@@ -1,5 +1,5 @@
 const Game = (() => {
-  // variables that must be reset
+  // variables that must be reRender
   const _board = {
     0: 2,
     1: 2,
@@ -19,24 +19,26 @@ const Game = (() => {
 
   const startBoard = () => {
     const divBoard = document.querySelector("#board");
+    const startButton = document.querySelector("#start-game");
     const boardTemplate = `
         <div id=row-1 class="row">
-            <div id="zero" class="square">T</div>
-            <div id="one" class="square">I</div>
-            <div id="two" class="square">C</div>
+            <div class="cell">T</div>
+            <div id="one" class="cell">I</div>
+            <div class="cell">C</div>
         </div>
         <div id=row-2 class="row">
-            <div id="three" class="square">T</div>
-            <div id="four" class="square">A</div>
-            <div id="five" class="square">C</div>
+            <div class="cell">T</div>
+            <div id="four" class="cell">A</div>
+            <div class="cell">C</div>
         </div>
         <div id=row-3 class="row">
-            <div id="six" class="square">T</div>
-            <div id="seven" class="square">O</div>
-            <div id="eight" class="square">E</div>
+            <div class="cell">T</div>
+            <div id="seven" class="cell">O</div>
+            <div class="cell">E</div>
         </div>
         `;
     divBoard.innerHTML = boardTemplate;
+    startButton.disabled = false;
   };
 
   const renderBoard = () => {
@@ -84,18 +86,19 @@ const Game = (() => {
         _board[id]--;
       }
       _turns++;
-    } else {
-      console.log("Already Marked");
     }
   };
 
-  const checkCondition = (playerVal) => {
+  const checkBoard = (playerVal) => {
     if (playerVal != 1 && playerVal != 3) {
-      return console.error("Incorrect args for checkCondition()");
+      return console.error("Incorrect args for checkBoard()");
     }
 
     const findWin = (val, s1, s2, s3) => {
-      if (_board[s1] === val && _board[s2] === val && _board[s3] === val) {
+      const sqOneMarked = _board[s1] === val;
+      const sqTwoMarked = _board[s2] === val;
+      const sqThreeMarked = _board[s3] === val;
+      if (sqOneMarked && sqTwoMarked && sqThreeMarked) {
         _hasWinner = true;
         return true;
       }
@@ -128,14 +131,20 @@ const Game = (() => {
     return false;
   };
 
-  const reset = () => {
+  const reRender = (isRematch) => {
     for (const key in _board) {
       _board[key] = 2;
     }
+
     _hasWinner = false;
     _isXturn = true;
     _turns = 0;
-    renderBoard();
+
+    if (isRematch) {
+      renderBoard();
+    } else {
+      startBoard();
+    }
   };
 
   const started = () => {
@@ -154,8 +163,8 @@ const Game = (() => {
     startBoard,
     renderBoard,
     markBoard,
-    checkCondition,
-    reset,
+    checkBoard,
+    reRender,
     started,
     hasWinner,
     turnNumber
@@ -185,27 +194,29 @@ const displayModal = (() => {
   return {winner, tie};
 })();
 
+const handleClick = (e) => {
+  const square = e.target.id;
+  const turnNum = Game.turnNumber();
+
+  Game.markBoard(square);
+
+  if (turnNum >= 4) {
+    const xWinner = Game.checkBoard(3);
+    const oWinner = Game.checkBoard(1);
+    const hasWinner = Game.hasWinner();
+
+    if (xWinner) { displayModal.winner("X"); }
+
+    if (oWinner) { displayModal.winner("O"); }
+  
+    if (turnNum >= 8 && !hasWinner) { displayModal.tie(); }
+  }
+};
+
+
 document.addEventListener("click", e => {
-  if (e.target.className == "square") {
-    Game.markBoard(e.target.id);
-    const turnNum = Game.turnNumber();
-    if (turnNum >= 5) {
-      const xWinner = Game.checkCondition(3);
-      const oWinner = Game.checkCondition(1);
-      const hasWinner = Game.hasWinner();
-
-      if (xWinner) {
-        displayModal.winner("X");
-      }
-
-      if (oWinner) {
-        displayModal.winner("O");
-      }
-
-      if (turnNum > 8 && !hasWinner) {
-        displayModal.tie();
-      }
-    }
+  if (e.target.matches(".square")) {
+    handleClick(e);
   }
 
   if (e.target.id == "start-game") {
@@ -213,15 +224,15 @@ document.addEventListener("click", e => {
     e.target.disabled = true;
   }
 
-  if (e.target.id == "reset-game") {
-    Game.reset();
+  if (e.target.id == "rematch") {
+    const isRematch = true;
+    Game.reRender(isRematch);
   }
-});
+
+  if (e.target.matches(".reset")) {
+    const isRematch = false;
+    Game.reRender(isRematch);
+  }
+}, false);
 
 Game.startBoard();
-
-/**
- * maybe make module that executes 
- * all necessary dom elements 
- * (ones being called a lot) 
- */
