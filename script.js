@@ -79,6 +79,7 @@ const Game = (() => {
     };
 
     if (_board[id] === 2) {
+      handleClick.setAiTurn(true);
       if (playerTurns() == "x") {
         squareID.innerText = "X";
         _board[id]++;
@@ -87,6 +88,8 @@ const Game = (() => {
         _board[id]--;
       }
       _turns++;
+    } else {
+      handleClick.setAiTurn(false);
     }
   };
 
@@ -167,6 +170,10 @@ const Game = (() => {
     return _turns;
   };
 
+  const board = () => {
+    return _board;
+  };
+
   return {
     startBoard,
     renderBoard,
@@ -175,7 +182,8 @@ const Game = (() => {
     reRender,
     started,
     hasWinner,
-    turnNumber
+    turnNumber,
+    board
   };
 })();
 
@@ -199,16 +207,26 @@ const displayModal = (() => {
     modalTitle.innerText = "It's a tie!";
   };
 
-  return {winner, tie};
+  return { winner, tie };
 })();
 
 const handleClick = (() => {
+  let againstAi;
+  let aiTurn = false;
+
   const cells = e => {
-    const square = e.target.id;
+    let square;
+
+    if (!againstAi) {
+      square = e.target.id;
+    } else if (againstAi && aiTurn == false) {
+      square = e.target.id;
+    } else {
+      square = e;
+    }
+    
     const turnNum = Game.turnNumber();
-
     Game.markBoard(square);
-
     if (turnNum >= 4) {
       const xWinner = Game.checkBoard(3);
       const oWinner = Game.checkBoard(1);
@@ -222,11 +240,13 @@ const handleClick = (() => {
     }
   };
 
+  
   const buttons = e => {
     let isRematch;
     if (e.target.id == "start-game") {
       Game.renderBoard();
       card.renderNames();
+      againstAi = false;
       e.target.disabled = true;
     }
   
@@ -237,36 +257,69 @@ const handleClick = (() => {
   
     if (e.target.matches(".reset")) {
       isRematch = false;
+      againstAi = false;
       Game.reRender(isRematch);
       card.resetCard();
     }
 
     if (e.target.id == "ai-game") {
+      againstAi = true;
       isRematch = false;
-      Game.reRender(isRematch);
+      Game.renderBoard();
       card.resetCard();
       card.cardBody();
     }
   };
+
+  const isAgainstAi = () => {
+    return againstAi;
+  };
+
+  const setAiTurn = (isAiTurn) => {
+    aiTurn = isAiTurn;
+  };
+
+  const isAiTurn = () => {
+    return aiTurn;
+  };
   
-  return {cells, buttons};
+  return {
+    cells, 
+    buttons, 
+    isAgainstAi, 
+    setAiTurn,
+    isAiTurn
+  };
 })();
 
-class Players {
-  constructor(name) {
-    this.name = name;
-  }
+const ai = (() =>  {
+  const random = (validMoves) => {
+    const min = 0;
+    const max = validMoves.length-1;
+    const randomMove = Math.floor(Math.random() * (max - min + 1)) + min;
+    return validMoves[randomMove];
+  };
+  
+  const makeMove = () => {
+    const available = [];
+    const board = Game.board();
+    for (let key in board) {
+      if (board[key] === 2) {
+        available.push(key);
+      }
+    }
+    
+    const move = random(available);
+    handleClick.cells(move);
+  };
 
-  getName() {
-    return this.name;
-  }
-
-}
+  return { makeMove };
+})();
 
 const card = (() => {
   const cardInfo = document.querySelector(".card-text");
   const cardTitle = document.querySelector(".card-title");
-  const defaultInfo = "Be the first player to get three in a row. Play against a friend or the computer!";
+  const defaultInfo = "Be the first player to get three in a row. Play against a friend or the ai!";
   // const PlayerOne = new Players("yoddle");
   // const PlayerTwo = new Players("coddle");
 
@@ -280,7 +333,7 @@ const card = (() => {
   };
 
   const cardBody = () => {
-    cardInfo.innerText = "TO BE ADDED IN THE FUTURE!";
+    cardInfo.innerText = "This AI should be pretty easy to beat!";
   };
   
   const resetCard = () => {
@@ -291,14 +344,35 @@ const card = (() => {
   return {renderNames, resetCard, cardBody};
 })();
 
+class Players {
+  constructor(name) {
+    this.name = name;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+}
+
 document.addEventListener("click", e => {
   if (e.target.matches(".square")) {
-    handleClick.cells(e);
+    if (!Game.hasWinner()) {
+      if (!handleClick.isAiTurn()) {
+        handleClick.cells(e);
+      }
+      
+      if (handleClick.isAgainstAi() && handleClick.isAiTurn(true)) {
+        ai.makeMove();
+        handleClick.setAiTurn(false);
+      }
+    } 
   }
 
   if (e.target.matches(".btn")) {
     handleClick.buttons(e);
   }
+ 
 }, false);
 
 Game.startBoard();
