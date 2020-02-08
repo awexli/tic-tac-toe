@@ -84,7 +84,7 @@ const Game = (() => {
     };
 
     if (_board[id] === 2) {
-      _aiTurn = true;
+      if (isAgainstAi) _aiTurn = true;
       if (playerTurns() == "x") {
         squareID.innerText = "X";
         _board[id]++;
@@ -94,7 +94,7 @@ const Game = (() => {
       }
       _turns++;
     } else {
-      _aiTurn = false;
+      if (isAgainstAi) _aiTurn = false;
     }
    
   };
@@ -166,7 +166,6 @@ const Game = (() => {
     }
   };
 
-  // might need this later
   const started = () => {
     return _gameStart;
   };
@@ -362,13 +361,16 @@ class Players {
 }
 
 document.addEventListener("click", e => {
-  console.log(e.target.id)
   if (e.target.className == "square") {
-    if (!Game.isAiTurn()) {
+    if (!Game.isAgainstAi()) {
       handleClick.cells(e.target.id);
     }
-    if (!Game.hasWinner()) {
-      if ( Game.isAiTurn() && Game.isAgainstAi()) {
+    
+    if (!Game.hasWinner() && Game.isAgainstAi()) {
+      if (!Game.isAiTurn()) {
+        handleClick.cells(e.target.id);
+      }
+      if ( Game.isAiTurn()) {
         ai.makeMove();
         Game.setAiTurn(false);
       }
