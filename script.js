@@ -157,6 +157,7 @@ const Game = (() => {
     }
 
     if (isRematch) {
+      _aiTurn = false;
       renderBoard();
     } else {
       _againstAi = false;
@@ -242,8 +243,9 @@ const handleClick = (() => {
   const cells = e => {
     let square = e;
     
-    const turnNum = Game.turnNumber();
+    
     Game.markBoard(square);
+    const turnNum = Game.turnNumber();
     if (turnNum >= 4) {
       const xWinner = Game.checkBoard(3);
       const oWinner = Game.checkBoard(1);
@@ -253,7 +255,7 @@ const handleClick = (() => {
 
       if (oWinner) { displayModal.winner("O"); }
 
-      if (turnNum >= 8 && !hasWinner) { displayModal.tie(); }
+      if (turnNum > 8 && !hasWinner) { displayModal.tie(); }
     }
   };
 
@@ -360,15 +362,13 @@ class Players {
 }
 
 document.addEventListener("click", e => {
-  console.log(e.target)
-  if (e.target.matches(".square")) {
+  console.log(e.target.id)
+  if (e.target.className == "square") {
+    if (!Game.isAiTurn()) {
+      handleClick.cells(e.target.id);
+    }
     if (!Game.hasWinner()) {
-      if (!Game.isAiTurn()) {
-        handleClick.cells(e.target.id);
-      }
-  
-      if ( Game.isAiTurn() && Game.isAgainstAi()) 
-      {
+      if ( Game.isAiTurn() && Game.isAgainstAi()) {
         ai.makeMove();
         Game.setAiTurn(false);
       }
