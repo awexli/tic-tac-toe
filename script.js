@@ -370,7 +370,7 @@ document.addEventListener("click", e => {
       if (!Game.isAiTurn()) {
         handleClick.cells(e.target.id);
       }
-      if ( Game.isAiTurn()) {
+      if (!Game.hasWinner() && Game.isAiTurn()) {
         ai.makeMove();
         Game.setAiTurn(false);
       }
