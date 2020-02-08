@@ -325,7 +325,7 @@ const ai = (() =>  {
 const card = (() => {
   const cardInfo = document.querySelector(".card-text");
   const cardTitle = document.querySelector(".card-title");
-  const defaultInfo = "Be the first player to get three in a row. Play against a friend or the ai!";
+  const defaultInfo = "Be the first player to get three in a row. Play against a friend or the AI!";
   const aiInfo = "This AI should be pretty easy to beat!";
 
   const cardBody = (mode) => {
