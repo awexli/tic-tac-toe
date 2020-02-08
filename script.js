@@ -14,12 +14,15 @@ const Game = (() => {
   let _isXturn = true;
   let _turns = 0;
   let _hasWinner = false;
+  let _againstAi = false;
+  let _aiTurn = false;
   // ========================= //
   let _gameStart = false;
 
   const startBoard = () => {
     const divBoard = document.querySelector("#board");
     const startButton = document.querySelector("#start-game");
+    const PvAIButton = document.querySelector("#ai-game");
     const boardTemplate = `
         <div id=row-1 class="row">
             <div class="cell">T</div>
@@ -38,7 +41,9 @@ const Game = (() => {
         </div>
         `;
     divBoard.innerHTML = boardTemplate;
+    
     startButton.disabled = false;
+    PvAIButton.disabled = false;
   };
 
   const renderBoard = () => {
@@ -79,7 +84,7 @@ const Game = (() => {
     };
 
     if (_board[id] === 2) {
-      handleClick.setAiTurn(true);
+      _aiTurn = true;
       if (playerTurns() == "x") {
         squareID.innerText = "X";
         _board[id]++;
@@ -89,8 +94,9 @@ const Game = (() => {
       }
       _turns++;
     } else {
-      handleClick.setAiTurn(false);
+      _aiTurn = false;
     }
+   
   };
 
   const checkBoard = (playerVal) => {
@@ -142,17 +148,19 @@ const Game = (() => {
   };
 
   const reRender = (isRematch) => {
-    for (const key in _board) {
-      _board[key] = 2;
-    }
-
     _hasWinner = false;
     _isXturn = true;
     _turns = 0;
 
+    for (const key in _board) {
+      _board[key] = 2;
+    }
+
     if (isRematch) {
       renderBoard();
     } else {
+      _againstAi = false;
+      _aiTurn = false;
       startBoard();
     }
   };
@@ -174,6 +182,22 @@ const Game = (() => {
     return _board;
   };
 
+  const isAgainstAi = () => {
+    return _againstAi;
+  };
+
+  const playAi = isAiPlaying => {
+    _againstAi = isAiPlaying;
+  };
+
+  const isAiTurn = () => {
+    return _aiTurn;
+  };
+  
+  const setAiTurn = isAiTurn => {
+    _aiTurn = isAiTurn;
+  };
+
   return {
     startBoard,
     renderBoard,
@@ -183,7 +207,11 @@ const Game = (() => {
     started,
     hasWinner,
     turnNumber,
-    board
+    board,
+    isAgainstAi, 
+    playAi,
+    setAiTurn,
+    isAiTurn
   };
 })();
 
@@ -211,19 +239,8 @@ const displayModal = (() => {
 })();
 
 const handleClick = (() => {
-  let againstAi;
-  let aiTurn = false;
-
   const cells = e => {
-    let square;
-
-    if (!againstAi) {
-      square = e.target.id;
-    } else if (againstAi && aiTurn == false) {
-      square = e.target.id;
-    } else {
-      square = e;
-    }
+    let square = e;
     
     const turnNum = Game.turnNumber();
     Game.markBoard(square);
@@ -242,12 +259,15 @@ const handleClick = (() => {
 
   
   const buttons = e => {
+    const startButton = document.querySelector("#start-game");
+    const PvAIButton = document.querySelector("#ai-game");
     let isRematch;
     if (e.target.id == "start-game") {
       Game.renderBoard();
-      card.renderNames();
-      againstAi = false;
+      card.cardBody(0);
+      Game.playAi(false);
       e.target.disabled = true;
+      PvAIButton.disabled = true;
     }
   
     if (e.target.id == "rematch") {
@@ -257,38 +277,23 @@ const handleClick = (() => {
   
     if (e.target.matches(".reset")) {
       isRematch = false;
-      againstAi = false;
       Game.reRender(isRematch);
       card.resetCard();
     }
 
     if (e.target.id == "ai-game") {
-      againstAi = true;
+      Game.playAi(true);
       isRematch = false;
       Game.renderBoard();
-      card.resetCard();
-      card.cardBody();
+      card.cardBody(1);
+      e.target.disabled = true;
+      startButton.disabled = true;
     }
-  };
-
-  const isAgainstAi = () => {
-    return againstAi;
-  };
-
-  const setAiTurn = (isAiTurn) => {
-    aiTurn = isAiTurn;
-  };
-
-  const isAiTurn = () => {
-    return aiTurn;
   };
   
   return {
     cells, 
-    buttons, 
-    isAgainstAi, 
-    setAiTurn,
-    isAiTurn
+    buttons
   };
 })();
 
@@ -320,20 +325,19 @@ const card = (() => {
   const cardInfo = document.querySelector(".card-text");
   const cardTitle = document.querySelector(".card-title");
   const defaultInfo = "Be the first player to get three in a row. Play against a friend or the ai!";
-  // const PlayerOne = new Players("yoddle");
-  // const PlayerTwo = new Players("coddle");
+  const aiInfo = "This AI should be pretty easy to beat!";
 
-  const renderNames = () => {
-    cardTitle.innerText = "PvP Mode";
-    cardInfo.innerText = defaultInfo;
-    // TODO
-    // const x = PlayerOne.getName().toUpperCase();
-    // const o = PlayerTwo.getName().toUpperCase();
-    // cardInfo.innerText = `${x} vs ${o}`;
-  };
+  const cardBody = (mode) => {
+    if (mode === 0) {
+      cardTitle.innerText = "PvP Mode";
+      cardInfo.innerText = defaultInfo;
+    }
 
-  const cardBody = () => {
-    cardInfo.innerText = "This AI should be pretty easy to beat!";
+    if (mode === 1) {
+      cardTitle.innerText = "PvAI Mode";
+      cardInfo.innerText = aiInfo;
+    }
+    
   };
   
   const resetCard = () => {
@@ -341,7 +345,7 @@ const card = (() => {
     cardInfo.innerText = defaultInfo;
   };
 
-  return {renderNames, resetCard, cardBody};
+  return {resetCard, cardBody};
 })();
 
 class Players {
@@ -356,17 +360,19 @@ class Players {
 }
 
 document.addEventListener("click", e => {
+  console.log(e.target)
   if (e.target.matches(".square")) {
     if (!Game.hasWinner()) {
-      if (!handleClick.isAiTurn()) {
-        handleClick.cells(e);
+      if (!Game.isAiTurn()) {
+        handleClick.cells(e.target.id);
       }
-      
-      if (handleClick.isAgainstAi() && handleClick.isAiTurn(true)) {
+  
+      if ( Game.isAiTurn() && Game.isAgainstAi()) 
+      {
         ai.makeMove();
-        handleClick.setAiTurn(false);
+        Game.setAiTurn(false);
       }
-    } 
+    }
   }
 
   if (e.target.matches(".btn")) {
