@@ -5,12 +5,12 @@ html {
     box-sizing: inherit;
 }
 body {
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 5% auto;
     background-color: #243447;
+    text-align: center;
 }
 #board {
     display: flex;
@@ -36,7 +36,10 @@ body {
     background-color: #243447;
     color: ivory;
 }
-.row {
+.card-body {
+    border-top: 1px solid rgb(131, 131, 131);
+}
+#row-1, #row-2 {
     border-bottom: solid 1px rgb(131, 131, 131);
 }
 [id="1"], [id="4"], [id="7"] {
@@ -46,4 +49,8 @@ body {
 #one, #four, #seven {
     border-right: solid 1px rgb(131, 131, 131);
     border-left: solid 1px rgb(131, 131, 131);
+}
+.modal-content {
+    background-color: #243447;
+    color: ivory;
 }

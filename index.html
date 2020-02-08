@@ -13,28 +13,33 @@
         <div class="card" style="width: 18.5rem;">
             <div id="board"></div>
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">Card body changes depending on option</p>
-              <button id="start-game" class="btn btn-primary">PvP</button>
-              <button type="button" class="btn btn-primary">PvAI</button>
-              <button type="button" class="reset btn btn-primary">Reset</button>
-              <button id="modal-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#v-modal" disabled></button>
+                <h5 class="card-title">About</h5>
+                <p class="card-text">
+                    Be the first player to get three in a row.
+                    Play against a friend or the computer!
+                </p>
+                <button id="start-game" class="btn btn-primary">PvP</button>
+                <button id="ai-game" type="button" class="btn btn-primary">PvAI</button>
+                <button type="button" class="reset btn btn-primary">Reset</button>
+                <button id="modal-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#v-modal" disabled></button>
             </div>
-          </div>
-          <!-- Modal -->
+        </div>
         <div class="modal fade" id="v-modal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="v-modal" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="col-12 modal-title" id="v-modal-label"></h5>
-                </div>
-                <div class="modal-footer justify-content-center">
-                <button id="rematch" type="button" class="btn btn-primary" data-dismiss="modal">Rematch</button>
-                <button type="button" class="reset btn btn-secondary" data-dismiss="modal">Reset</button>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="col-12 modal-title" id="v-modal-label"></h5>
+                    </div>
+                    <div class="modal-body">
+                        
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button id="rematch" type="button" class="btn btn-primary" data-dismiss="modal">Rematch</button>
+                        <button type="button" class="reset btn btn-secondary" data-dismiss="modal">Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
     <script src="./script.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

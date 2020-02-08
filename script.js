@@ -223,25 +223,73 @@ const handleClick = (() => {
   };
 
   const buttons = e => {
+    let isRematch;
     if (e.target.id == "start-game") {
       Game.renderBoard();
+      card.renderNames();
       e.target.disabled = true;
     }
   
     if (e.target.id == "rematch") {
-      const isRematch = true;
+      isRematch = true;
       Game.reRender(isRematch);
     }
   
     if (e.target.matches(".reset")) {
-      const isRematch = false;
+      isRematch = false;
       Game.reRender(isRematch);
+      card.resetCard();
+    }
+
+    if (e.target.id == "ai-game") {
+      isRematch = false;
+      Game.reRender(isRematch);
+      card.resetCard();
+      card.cardBody();
     }
   };
   
   return {cells, buttons};
 })();
 
+class Players {
+  constructor(name) {
+    this.name = name;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+}
+
+const card = (() => {
+  const cardInfo = document.querySelector(".card-text");
+  const cardTitle = document.querySelector(".card-title");
+  const defaultInfo = "Be the first player to get three in a row. Play against a friend or the computer!";
+  // const PlayerOne = new Players("yoddle");
+  // const PlayerTwo = new Players("coddle");
+
+  const renderNames = () => {
+    cardTitle.innerText = "PvP Mode";
+    cardInfo.innerText = defaultInfo;
+    // TODO
+    // const x = PlayerOne.getName().toUpperCase();
+    // const o = PlayerTwo.getName().toUpperCase();
+    // cardInfo.innerText = `${x} vs ${o}`;
+  };
+
+  const cardBody = () => {
+    cardInfo.innerText = "TO BE ADDED IN THE FUTURE!";
+  };
+  
+  const resetCard = () => {
+    cardTitle.innerText = "About";
+    cardInfo.innerText = defaultInfo;
+  };
+
+  return {renderNames, resetCard, cardBody};
+})();
 
 document.addEventListener("click", e => {
   if (e.target.matches(".square")) {
